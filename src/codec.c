@@ -6,6 +6,7 @@
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/evp.h>
+#include <openssl/md5.h>
 
 /**
  * BASE64编码
@@ -57,6 +58,33 @@ static int codec_base64_decode(lua_State *L)
   BIO_free_all(bio);
 
   lua_pushlstring(L, dst, n);
+  return 1;
+}
+
+/**
+ * MD5编码
+ *
+ * LUA示例:
+ * local codec = require('codec')
+ * local src = [[...]]
+ * local result = codec.md5_encode(src)
+ */
+static int codec_md5_encode(lua_State *L)
+{
+  size_t len;
+  const char *cs = luaL_checklstring(L, 1, &len);
+  unsigned char bs[16];
+  char dst[32];
+
+  MD5_CTX ctx;
+  MD5_Init(&ctx);
+  MD5_Update(&ctx, cs, len);
+  MD5_Final(bs, &ctx);
+  int i;
+  for(i = 0; i < 16; i++)
+    sprintf(dst + i * 2, "%02x", bs[i]);
+
+  lua_pushlstring(L, dst, 32);
   return 1;
 }
 
@@ -387,6 +415,7 @@ static const struct luaL_Reg codec[] =
 {
   {"base64_encode", codec_base64_encode},
   {"base64_decode", codec_base64_decode},
+  {"md5_encode", codec_md5_encode},
   {"aes_encrypt", codec_aes_encrypt},
   {"aes_decrypt", codec_aes_decrypt},
   {"rsa_private_sign", codec_rsa_private_sign},
