@@ -6,7 +6,7 @@ JKym26R0T+19JDa3MVZFDbwgUGT8XM8bElrKgxexhTVRt07btyIejdbiPx7sCbWc
 VP8peZI+QZEVVzaE2Ci5n0lP9v9GUSl0QfZU94uIwl++BVq0VFvbHax/R/q4oTRD
 1u73ASM27QW42+cJFwIDAQAB
 -----END PUBLIC KEY-----]]
-local bs = codec.rsa_public_encrypt(src, pubpem)
+local bs = codec.rsa_public_encrypt(src, pubpem, 2)
 local dst = codec.base64_encode(bs)
 print(dst)
 

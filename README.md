@@ -77,8 +77,12 @@ Lua代码示例
 	VP8peZI+QZEVVzaE2Ci5n0lP9v9GUSl0QfZU94uIwl++BVq0VFvbHax/R/q4oTRD
 	1u73ASM27QW42+cJFwIDAQAB
 	-----END PUBLIC KEY-----]]
-	local ok = codec.rsa_public_verify(src, dbs, pubpem)
+	local typ = 2
+	local ok = codec.rsa_public_verify(src, dbs, pubpem, typ)
 	assert(ok)
+
+rsa_public_verify最后一个参数为公钥串类型，1：PEM  2：PKCS8
+就是“-----BEGIN RSA PUBLIC KEY-----”和“-----BEGIN PUBLIC KEY-----”的区别，啦啦啦
 	
 ### RSA公钥加密及私钥解密
 	local codec = require('codec')
@@ -89,7 +93,8 @@ Lua代码示例
 	VP8peZI+QZEVVzaE2Ci5n0lP9v9GUSl0QfZU94uIwl++BVq0VFvbHax/R/q4oTRD
 	1u73ASM27QW42+cJFwIDAQAB
 	-----END PUBLIC KEY-----]]
-	local bs = codec.rsa_public_encrypt(src, pubpem)
+	local typ = 2
+	local bs = codec.rsa_public_encrypt(src, pubpem, typ)
 	local dst = codec.base64_encode(bs)
 	print(dst)
 	
@@ -112,3 +117,6 @@ Lua代码示例
 	local dsrc = codec.rsa_private_decrypt(dbs, privpem)
 	print(dsrc)
 	assert(dsrc == src)
+
+rsa_public_encrypt最后一个参数为公钥串类型，1：PEM  2：PKCS8
+就是“-----BEGIN RSA PUBLIC KEY-----”和“-----BEGIN PUBLIC KEY-----”的区别，再啦啦啦

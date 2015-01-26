@@ -267,7 +267,8 @@ static int codec_rsa_private_sign(lua_State *L)
  * local sign = [[...]] --BASE64签名
  * local bs = codec.base64_decode(sign)
  * local pem = [[...]] --公钥PEM字符串
- * local ok = codec.rsa_public_verify(src, bs, pem) --true/false
+ * local type = 1
+ * local ok = codec.rsa_public_verify(src, bs, pem, type) --true/false
  */
 static int codec_rsa_public_verify(lua_State *L)
 {
@@ -275,6 +276,7 @@ static int codec_rsa_public_verify(lua_State *L)
   const char *src = luaL_checklstring(L, 1, &srclen);
   const char *sign = luaL_checklstring(L, 2, &signlen);
   char *pem = luaL_checkstring(L, 3);
+  int type = luaL_checkint(L, 4);
 
   SHA_CTX ctx;
   int ctxlen = sizeof(ctx);
@@ -303,7 +305,7 @@ static int codec_rsa_public_verify(lua_State *L)
     BIO_free_all(bio);
     return luaL_error(L, "PEM error");
   }
-  RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
+  RSA *rsa = type == 1 ? PEM_read_bio_RSAPublicKey(bio, NULL, NULL, NULL) : PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
   if(rsa == NULL)
   {
     BIO_free_all(bio);
@@ -325,7 +327,8 @@ static int codec_rsa_public_verify(lua_State *L)
  * local codec = require('codec')
  * local src = 'something'
  * local pem = [[...]] --公钥PEM字符串
- * local bs = codec.rsa_public_encrypt(src, pem)
+ * local type = 1
+ * local bs = codec.rsa_public_encrypt(src, pem, type)
  * local dst = codec.base64_encode(bs) --BASE64密文
  */
 static int codec_rsa_public_encrypt(lua_State *L)
@@ -333,6 +336,7 @@ static int codec_rsa_public_encrypt(lua_State *L)
   size_t len;
   const char *src = luaL_checklstring(L, 1, &len);
   char *pem = luaL_checkstring(L, 2);
+  int type = luaL_checkint(L, 3);
 
   BIO *bio = BIO_new_mem_buf((void *)pem, -1);
   if(bio == NULL)
@@ -340,7 +344,7 @@ static int codec_rsa_public_encrypt(lua_State *L)
     BIO_free_all(bio);
     return luaL_error(L, "PEM error");
   }
-  RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
+  RSA *rsa = type == 1 ? PEM_read_bio_RSAPublicKey(bio, NULL, NULL, NULL) : PEM_read_bio_RSA_PUBKEY(bio, NULL, NULL, NULL);
   if(rsa == NULL)
   {
     BIO_free_all(bio);

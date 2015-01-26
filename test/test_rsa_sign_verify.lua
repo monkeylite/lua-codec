@@ -26,5 +26,5 @@ JKym26R0T+19JDa3MVZFDbwgUGT8XM8bElrKgxexhTVRt07btyIejdbiPx7sCbWc
 VP8peZI+QZEVVzaE2Ci5n0lP9v9GUSl0QfZU94uIwl++BVq0VFvbHax/R/q4oTRD
 1u73ASM27QW42+cJFwIDAQAB
 -----END PUBLIC KEY-----]]
-local ok = codec.rsa_public_verify(src, dbs, pubpem)
+local ok = codec.rsa_public_verify(src, dbs, pubpem, 2)
 assert(ok)
