@@ -1,6 +1,5 @@
 local codec = require('codec')
-local src = '123456'
-local key = '01234567890abcdef'
+local src, key = '123456', '01234567890abcdef'
 local bs = codec.aes_encrypt(src, key)
 local dst = codec.base64_encode(bs)
 print(dst)

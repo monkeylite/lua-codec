@@ -7,6 +7,7 @@
 #include <openssl/pem.h>
 #include <openssl/evp.h>
 #include <openssl/md5.h>
+#include <openssl/hmac.h>
 
 /**
  * BASE64编码
@@ -75,16 +76,43 @@ static int codec_md5_encode(lua_State *L)
   const char *cs = luaL_checklstring(L, 1, &len);
   unsigned char bs[16];
   char dst[32];
-
-  MD5_CTX ctx;
-  MD5_Init(&ctx);
-  MD5_Update(&ctx, cs, len);
-  MD5_Final(bs, &ctx);
+  
+  MD5((unsigned char *)cs, len, bs);
+  
   int i;
   for(i = 0; i < 16; i++)
     sprintf(dst + i * 2, "%02x", bs[i]);
 
   lua_pushlstring(L, dst, 32);
+  return 1;
+}
+
+/**
+ * HMAC-SHA1编码
+ *
+ * LUA示例:
+ * local codec = require('codec')
+ * local src = [[...]]
+ * local key = [[...]]
+ * local result = codec.hmac_sha1_encode(src, key)
+ */
+static int codec_hmac_sha1_encode(lua_State *L)
+{
+  size_t len, klen;
+  const char *cs = luaL_checklstring(L, 1, &len);
+  const char *key = luaL_checklstring(L, 2, &klen);
+  unsigned char bs[EVP_MAX_MD_SIZE];
+  
+  unsigned int n;
+  const EVP_MD *evp = EVP_sha1();
+  HMAC(evp, key, klen, (unsigned char *)cs, len, bs, &n);
+  
+  int hexn = n * 2, i;
+  char dst[hexn];
+  for(i = 0; i < n; i++)
+    sprintf(dst + i * 2, "%02x", bs[i]);
+
+  lua_pushlstring(L, dst, hexn);
   return 1;
 }
 
@@ -420,6 +448,7 @@ static const struct luaL_Reg codec[] =
   {"base64_encode", codec_base64_encode},
   {"base64_decode", codec_base64_decode},
   {"md5_encode", codec_md5_encode},
+  {"hmac_sha1_encode", codec_hmac_sha1_encode},
   {"aes_encrypt", codec_aes_encrypt},
   {"aes_decrypt", codec_aes_decrypt},
   {"rsa_private_sign", codec_rsa_private_sign},

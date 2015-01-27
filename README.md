@@ -34,10 +34,16 @@ Lua代码示例
 	print(dst)
 	assert('e10adc3949ba59abbe56e057f20f883e' == dst)
 
+### HMAC-SHA1编码
+	local codec = require('codec')
+	local src, key = '123456', '112233'
+	local dst = codec.hmac_sha1_encode(src)
+	print(dst)
+	assert('06285a0e4a99a56f7f9d1e239acad4de7c79ebe9' == dst)
+
 ### AES-ECB-PKCS5Padding加解密
 	local codec = require('codec')
-	local src = '123456'
-	local key = '01234567890abcdef'
+	local src, key = '123456', '01234567890abcdef'
 	local bs = codec.aes_encrypt(src, key)
 	local dst = codec.base64_encode(bs)
 	print(dst)
