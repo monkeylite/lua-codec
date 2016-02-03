@@ -43,7 +43,7 @@ Lua代码示例
 
 ### AES-ECB-PKCS5Padding加解密
 	local codec = require('codec')
-	local src, key = '123456', '01234567890abcdef'
+	local src, key = '123456', '0123456789abcdef'
 	local bs = codec.aes_encrypt(src, key)
 	local dst = codec.base64_encode(bs)
 	print(dst)
